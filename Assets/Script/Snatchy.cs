@@ -9,7 +9,7 @@ public class Snatchy : MonoBehaviour
     private Vector2 moveAxis;
     private Rigidbody2D rgdb;
 
-    bool isFacingRight = true;
+    public bool isFacingRight = true;
 
     private void Awake()
     {
@@ -30,7 +30,7 @@ public class Snatchy : MonoBehaviour
 
     private void Update()
     {
-        if ((rgdb.velocity.x > 0 && !isFacingRight) || (rgdb.velocity.x < 0 && isFacingRight)) Flip();
+        //if ((rgdb.velocity.x > 0 && !isFacingRight) || (rgdb.velocity.x < 0 && isFacingRight)) Flip();
     }
 
     private void FixedUpdate()
