@@ -50,6 +50,30 @@ TextureImporter:
   - first:
       213: 133736264502346651
     second: mur_15
+  - first:
+      213: -7009418971130085877
+    second: mur_16
+  - first:
+      213: 8303794962232461989
+    second: mur_17
+  - first:
+      213: -5045093631149857536
+    second: mur_18
+  - first:
+      213: -432870135450628374
+    second: mur_19
+  - first:
+      213: 6002350569653243337
+    second: mur_20
+  - first:
+      213: -2335299975228370588
+    second: mur_21
+  - first:
+      213: 1162796432608093831
+    second: mur_22
+  - first:
+      213: -4874736571262335417
+    second: mur_23
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -506,6 +530,174 @@ TextureImporter:
       bones: []
       spriteID: b93004b8c602bd100800000000000000
       internalID: 133736264502346651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 300
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0e38ef459a89be90800000000000000
+      internalID: -7009418971130085877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_17
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 300
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5aa4b83d5810d3370800000000000000
+      internalID: 8303794962232461989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 260
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0052ab0921a3cf9b0800000000000000
+      internalID: -5045093631149857536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_19
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 260
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aee079eb7e22ef9f0800000000000000
+      internalID: -432870135450628374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 220
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cd8b819a02ac4350800000000000000
+      internalID: 6002350569653243337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_21
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 220
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 461d884ab09579fd0800000000000000
+      internalID: -2335299975228370588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_22
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 180
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78662b7d135132010800000000000000
+      internalID: 1162796432608093831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mur_23
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 180
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7468d487ae4795cb0800000000000000
+      internalID: -4874736571262335417
       vertices: []
       indices: 
       edges: []
