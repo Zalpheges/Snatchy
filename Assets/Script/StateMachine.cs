@@ -11,7 +11,8 @@ public class StateMachine
         MoveDown,
         TurnRight,
         TurnLeft,
-        TurnAround
+        TurnAround,
+        Push
     }
 
     public class State
@@ -21,7 +22,6 @@ public class StateMachine
             Intersection,
             Plate,
             Button,
-            Door,
             Wall
         }
 

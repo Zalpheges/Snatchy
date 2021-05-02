@@ -11,7 +11,9 @@ public class Snatchy : MonoBehaviour
     public Vector3 direction;
     public Vector3 goal;
     public LayerMask ground;
+    public LayerMask button;
     public bool isTurning = false;
+    public bool last = false;
     private Rigidbody2D rgdb;
     Animator animator;
 
@@ -31,16 +33,22 @@ public class Snatchy : MonoBehaviour
     {
         machine = new StateMachine();
 
-        direction = Vector2.right;
         StateMachine.State state = new StateMachine.State(StateMachine.Action.TurnRight);
         StateMachine.State state1 = new StateMachine.State(StateMachine.Action.TurnLeft);
+        StateMachine.State state2 = new StateMachine.State(StateMachine.Action.Push);
         state.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
         state.SetOutput(StateMachine.State.Face.South, new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
+        state.SetOutput(StateMachine.State.Face.East, new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
 
         state1.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
         state1.SetOutput(StateMachine.State.Face.South, new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
+        state1.SetOutput(StateMachine.State.Face.East, new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
+
+        state2.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Wall));
+
         machine.AddState(state);
         machine.AddState(state1);
+        machine.AddState(state2);
 
         goal = rgdb.position;
         direction = Vector2.right;
@@ -59,7 +67,7 @@ public class Snatchy : MonoBehaviour
             if (position == goal) OnGoal();
             else
             {
-                position = Vector2.MoveTowards(position, goal, Time.deltaTime);
+                position = Vector2.MoveTowards(position, goal, 2 * Time.deltaTime);
                 rgdb.MovePosition(position);
             }
         }
@@ -81,12 +89,12 @@ public class Snatchy : MonoBehaviour
                 break;
 
             case StateMachine.Action.TurnLeft:
-                direction = new Vector2(direction.y, direction.x);
+                direction = Rotate(direction, 90f);
                 animator.SetFloat("To", ((animator.GetFloat("Current") + 90f) + 360f) % 360f);
                 break;
 
             case StateMachine.Action.TurnRight:
-                direction = new Vector2(direction.y, -direction.x);
+                direction = Rotate(direction, -90f);
                 animator.SetFloat("To", ((animator.GetFloat("Current") - 90f) + 360f) % 360f);
                 break;
 
@@ -110,6 +118,10 @@ public class Snatchy : MonoBehaviour
                 animator.SetFloat("To", 270f);
                 break;
 
+            case StateMachine.Action.Push:
+                StartCoroutine(Push());
+                break;
+
             case StateMachine.Action.None:
             default:
                 direction = direction.normalized * 0.5f;
@@ -117,6 +129,21 @@ public class Snatchy : MonoBehaviour
         }
 
         if (animator.GetFloat("Current") != animator.GetFloat("To")) StartCoroutine(Turn());
+    }
+
+    private IEnumerator Push()
+    {
+        animator.SetTrigger("Push");
+        isTurning = true;
+
+        yield return new WaitForSeconds(0.1f);
+
+        RaycastHit2D _button = Physics2D.Raycast(rgdb.position, direction, 1f, button);
+        _button.collider.SendMessageUpwards("Push");
+
+        yield return new WaitForSeconds(7 / 6f - 0.1f);
+
+        isTurning = false;
     }
 
     private IEnumerator Turn()
@@ -137,22 +164,41 @@ public class Snatchy : MonoBehaviour
 
     private void OnGoal()
     {
-        bool intersection = false;
-
-        Vector2 _direction = new Vector2(direction.y, direction.x);
-        if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) intersection = true;
-
-        _direction = new Vector2(_direction.y, _direction.x);
-        if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) intersection = true;
-
-        _direction = new Vector2(_direction.y, _direction.x);
-        if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) intersection = true;
-
-        if (intersection) SetAction(machine.OnEvent(StateMachine.State.Condition.Intersection));
+        if (Physics2D.Raycast(rgdb.position, direction, 1f, button)) SetAction(machine.OnEvent(StateMachine.State.Condition.Button));
         else
         {
-            if (!Physics2D.Raycast(rgdb.position, direction, 1f, ground)) goal += direction;
-            else SetAction(machine.OnEvent(StateMachine.State.Condition.Wall));
+            bool wall = false;
+            int ways = 0;
+
+            if (!Physics2D.Raycast(rgdb.position, direction, 1f, ground))
+            {
+                wall = true;
+                ways++;
+            }
+
+            Vector2 _direction = Rotate(direction, -90f);
+            if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
+
+            _direction = Rotate(_direction, -90f);
+            if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
+
+            _direction = Rotate(_direction, -90f);
+            if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
+
+            if (!last && ways > 1)
+            {
+                SetAction(machine.OnEvent(StateMachine.State.Condition.Intersection));
+                last = true;
+            }
+            else
+            {
+                if (!Physics2D.Raycast(rgdb.position, direction, 1f, ground))
+                {
+                    goal += direction;
+                    last = false;
+                }
+                else SetAction(machine.OnEvent(StateMachine.State.Condition.Wall));
+            }
         }
     }
 
@@ -169,5 +215,17 @@ public class Snatchy : MonoBehaviour
     private void OnDisable()
     {
         inputs.Disable();
+    }
+
+    private Vector2 Rotate(Vector2 v, float degrees)
+    {
+        float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(degrees * Mathf.Deg2Rad);
+
+        float tx = v.x;
+        float ty = v.y;
+        v.x = (cos * tx) - (sin * ty);
+        v.y = (sin * tx) + (cos * ty);
+        return v;
     }
 }
