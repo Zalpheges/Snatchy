@@ -25,14 +25,6 @@ public class StateMachine
             Wall
         }
 
-        public enum Face
-        {
-            East,
-            North,
-            West,
-            South
-        }
-
         public class Output
         {
             public int index;
@@ -46,23 +38,28 @@ public class StateMachine
         }
 
         public Action action;
-        Output[] m_Outputs;
+        public List<Output> m_Outputs;
 
         public State(Action action)
         {
             this.action = action;
 
-            m_Outputs = new Output[4];
+            m_Outputs = new List<Output>();
         }
 
-        public void SetOutput(Face face, Output output)
+        public void SetOutput(Output output)
         {
-            m_Outputs[(int)face] = output;
+            m_Outputs.Add(output);
+        }
+
+        public void DeleteOutput(int index)
+        {
+            m_Outputs.RemoveAt(index);
         }
 
         public int CheckCondition(Condition condition)
         {
-            for (int i = 0; i < 4; i++) if (m_Outputs[i] != null && m_Outputs[i].condition == condition) return m_Outputs[i].index;
+            for (int i = 0; i < m_Outputs.Count; i++) if (m_Outputs[i] != null && m_Outputs[i].condition == condition) return m_Outputs[i].index;
 
             return -1;
         }
@@ -71,9 +68,15 @@ public class StateMachine
     State m_Current;
     List<State> m_States = new List<State>();
 
-    public void AddState(State state)
+    public int AddState(State state)
     {
         m_States.Add(state);
+        return m_States.Count - 1;
+    }
+
+    public State.Output[] GetOutputs(int index)
+    {
+        return m_States[index].m_Outputs.ToArray();
     }
 
     public Action Start()

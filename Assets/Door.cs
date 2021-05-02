@@ -14,6 +14,8 @@ public class Door : MonoBehaviour
     public void Push()
     {
         children[1].gameObject.layer = 0;
-        Destroy(children[2].gameObject);
+        children[1].GetComponent<PolygonCollider2D>().enabled = false;
+        children[2].GetComponent<Animator>().SetTrigger("Ouverture");
+        children[2].GetComponent<BoxCollider2D>().enabled = false;
     }
 }

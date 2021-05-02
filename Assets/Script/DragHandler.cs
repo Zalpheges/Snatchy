@@ -8,6 +8,8 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private GraphicRaycaster raycaster;
     public EventSystem eventSystem;
 
+    public StateMachine machine;
+
     [SerializeField] private Image buffer;
 
     RectTransform copy;
@@ -15,6 +17,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     private void Awake()
     {
+        machine = new StateMachine();
         raycaster = GetComponent<GraphicRaycaster>();
 
         eventSystem = GetComponent<EventSystem>();
@@ -54,7 +57,12 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnPointerDown(PointerEventData data)
     {
-        if (begin = GetElement(data, "Flux")) Debug.Log("Sale pute de merde");
+        if (begin = GetElement(data, "Item"))
+        {
+            int index = int.Parse(begin.name);
+
+            StateMachine.State.Output[] outputs = machine.GetOutputs(index);
+        }
     }
 
     private GameObject GetElement(PointerEventData data, string tag)
@@ -86,6 +94,36 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             _a[i].gameObject.SetActive(_b[i].gameObject.activeInHierarchy);
             _b[i].gameObject.SetActive(active);
         }
+    }
+
+    public void Action(StateMachine.Action action)
+    {
+        int index = machine.AddState(new StateMachine.State(action));
+
+        GameObject[] children = GetChildren(gameObject);
+
+        foreach (GameObject child in children)
+        {
+            if (child.tag != "Item")
+            {
+                child.tag = "Item";
+                child.GetComponent<Image>().sprite = null;
+                child.name = index.ToString();
+            }
+        }
+    }
+
+    private GameObject[] GetChildren(GameObject gameObject)
+    {
+        GameObject[] _children = GetComponentsInChildren<GameObject>();
+        List<GameObject> children = new List<GameObject>();
+
+        foreach (GameObject child in _children)
+        {
+            if (child.transform.parent.gameObject == gameObject) children.Add(child);
+        }
+
+        return children.ToArray();
     }
 
     private void SetElementAlpha(GameObject element, float a)

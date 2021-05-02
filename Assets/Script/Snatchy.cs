@@ -8,14 +8,17 @@ public class Snatchy : MonoBehaviour
     [SerializeField] private float speed = 150f;
 
     public StateMachine.Action state;
-    public Vector3 direction;
-    public Vector3 goal;
+    private Vector3 direction;
+    private Vector3 goal;
     public LayerMask ground;
     public LayerMask button;
-    public bool isTurning = false;
-    public bool last = false;
+    private bool isTurning = false;
+    private bool last = false;
+    public int balade = 0;
     private Rigidbody2D rgdb;
     Animator animator;
+    public AudioClip[] clips;
+    private AudioSource source;
 
     StateMachine machine;
 
@@ -23,6 +26,7 @@ public class Snatchy : MonoBehaviour
     {
         rgdb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        source = GetComponent<AudioSource>();
 
         inputs = new PlayerInputs();
 
@@ -33,18 +37,18 @@ public class Snatchy : MonoBehaviour
     {
         machine = new StateMachine();
 
-        StateMachine.State state = new StateMachine.State(StateMachine.Action.TurnRight);
-        StateMachine.State state1 = new StateMachine.State(StateMachine.Action.TurnLeft);
+        StateMachine.State state = new StateMachine.State(StateMachine.Action.TurnLeft);
+        StateMachine.State state1 = new StateMachine.State(StateMachine.Action.TurnRight);
         StateMachine.State state2 = new StateMachine.State(StateMachine.Action.Push);
-        state.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
-        state.SetOutput(StateMachine.State.Face.South, new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
-        state.SetOutput(StateMachine.State.Face.East, new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
+        state.SetOutput(new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
+        state.SetOutput(new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
+        state.SetOutput(new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
 
-        state1.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
-        state1.SetOutput(StateMachine.State.Face.South, new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
-        state1.SetOutput(StateMachine.State.Face.East, new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
+        state1.SetOutput(new StateMachine.State.Output(0, StateMachine.State.Condition.Intersection));
+        state1.SetOutput(new StateMachine.State.Output(1, StateMachine.State.Condition.Wall));
+        state1.SetOutput(new StateMachine.State.Output(2, StateMachine.State.Condition.Button));
 
-        state2.SetOutput(StateMachine.State.Face.North, new StateMachine.State.Output(0, StateMachine.State.Condition.Wall));
+        state2.SetOutput(new StateMachine.State.Output(0, StateMachine.State.Condition.Wall));
 
         machine.AddState(state);
         machine.AddState(state1);
@@ -136,12 +140,15 @@ public class Snatchy : MonoBehaviour
         animator.SetTrigger("Push");
         isTurning = true;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.4f);
 
         RaycastHit2D _button = Physics2D.Raycast(rgdb.position, direction, 1f, button);
         _button.collider.SendMessageUpwards("Push");
 
-        yield return new WaitForSeconds(7 / 6f - 0.1f);
+        source.clip = clips[0];
+        source.Play();
+
+        yield return new WaitForSeconds(7 / 6f - 0.4f);
 
         isTurning = false;
     }
@@ -179,10 +186,7 @@ public class Snatchy : MonoBehaviour
             Vector2 _direction = Rotate(direction, -90f);
             if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
 
-            _direction = Rotate(_direction, -90f);
-            if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
-
-            _direction = Rotate(_direction, -90f);
+            _direction = Rotate(_direction, -180f);
             if (!Physics2D.Raycast(rgdb.position, _direction, 1f, ground)) ways++;
 
             if (!last && ways > 1)
@@ -194,12 +198,30 @@ public class Snatchy : MonoBehaviour
             {
                 if (!Physics2D.Raycast(rgdb.position, direction, 1f, ground))
                 {
+                    if (balade < 3)
+                    {
+                        balade++;
+                        return;
+                    }
+                    else
+                    {
+                        //source.clip = clips[3];
+                        //source.Play();
+                    }
+
                     goal += direction;
                     last = false;
                 }
-                else SetAction(machine.OnEvent(StateMachine.State.Condition.Wall));
+                else
+                {
+                    SetAction(machine.OnEvent(StateMachine.State.Condition.Wall));
+                    source.clip = clips[1];
+                    source.Play();
+                }
             }
         }
+
+        balade = 0;
     }
 
     private void OnMove(Vector2 input)
