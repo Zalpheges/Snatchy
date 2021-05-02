@@ -4,10 +4,14 @@ public class StateMachine
 {
     public enum Action
     {
+        None,
         MoveRight,
         MoveUp,
         MoveLeft,
-        MoveDown
+        MoveDown,
+        TurnRight,
+        TurnLeft,
+        TurnAround
     }
 
     public class State
@@ -16,28 +20,51 @@ public class StateMachine
         {
             Intersection,
             Plate,
-            Button
+            Button,
+            Door,
+            Wall
+        }
+
+        public enum Face
+        {
+            East,
+            North,
+            West,
+            South
         }
 
         public class Output
         {
-            public int outputIndex;
+            public int index;
             public Condition condition;
 
             public Output(int outputIndex, Condition condition)
             {
-                this.outputIndex = outputIndex;
+                index = outputIndex;
                 this.condition = condition;
             }
         }
 
-        Action action;
-        List<Output> outputsIndices;
+        public Action action;
+        Output[] m_Outputs;
 
-        public State(Action action, params int[] indices)
+        public State(Action action)
         {
             this.action = action;
-            outputsIndices = new List<Output>(4);
+
+            m_Outputs = new Output[4];
+        }
+
+        public void SetOutput(Face face, Output output)
+        {
+            m_Outputs[(int)face] = output;
+        }
+
+        public int CheckCondition(Condition condition)
+        {
+            for (int i = 0; i < 4; i++) if (m_Outputs[i] != null && m_Outputs[i].condition == condition) return m_Outputs[i].index;
+
+            return -1;
         }
     }
 
@@ -49,11 +76,18 @@ public class StateMachine
         m_States.Add(state);
     }
 
-    public void Start()
+    public Action Start()
     {
-        if (m_States.Count > 0)
-        {
-            m_Current = m_States[0];
-        }
+        if (m_States.Count > 0) return (m_Current = m_States[0]).action;
+        else return Action.None;
+    }
+
+    public Action OnEvent(State.Condition condition)
+    {
+        int index = m_Current.CheckCondition(condition);
+
+        if (index >= 0) m_Current = m_States[index];
+
+        return m_Current.action;
     }
 }

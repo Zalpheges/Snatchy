@@ -33,7 +33,7 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData data)
     {
-        copy.GetComponent<RectTransform>().anchoredPosition += data.delta;
+        if (copy) copy.GetComponent<RectTransform>().anchoredPosition += data.delta;
     }
 
     public void OnEndDrag(PointerEventData data)
@@ -41,6 +41,8 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         Destroy(copy.gameObject);
 
         GameObject end = GetElement(data, "Item");
+        if (!end) end = GetElement(data, "Cell");
+
         if (end)
         {
             SwapElements(begin, end);
